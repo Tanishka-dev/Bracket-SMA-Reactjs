@@ -23,7 +23,7 @@ const Home = () => {
       return () => unsub;
    }, []);
 
-   const userData = useUserData();
+   const user = useUserData();
 
    return (
       <div className="home">
@@ -37,7 +37,7 @@ const Home = () => {
                username={post.username}
             />
          ))}
-         {userData.isLoggedIn && <ImageUpload username={"yo"} />}
+         {user.isLoggedIn && <ImageUpload username={user.user.displayName} />}
       </div>
    );
 };

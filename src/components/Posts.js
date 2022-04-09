@@ -36,9 +36,7 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
       };
    }, [postId]);
 
-   const addComment = (e) => {
-      e.preventDefault();
-
+   const addComment = (username) => {
       const comtCollection = collection(db, "posts", postId, "comments");
 
       addDoc(comtCollection, {
@@ -126,7 +124,7 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
                   <Comment
                      postId={postId}
                      id={comment.id}
-                     username={username}
+                     username={user.user.displayName}
                      comment={comment}
                   />
                   {comment.data.replies?.map((reply, index) => {
@@ -140,7 +138,7 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
                               postId={postId}
                               index={index}
                               id={comment.id}
-                              username={username}
+                              username={user.user.displayName}
                            />
                         </div>
                      );
@@ -150,7 +148,10 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
          </div>
 
          {auth.currentUser ? (
-            <form className="flex gap-4" onSubmit={addComment}>
+            <form
+               className="flex gap-4"
+               onSubmit={() => addComment(user.user.displayName)}
+            >
                <input
                   type="text"
                   className="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
