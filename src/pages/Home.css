@@ -1,0 +1,139 @@
+.App {
+   height: 100%;
+   width: 100%;
+   position: relative;
+}
+
+.header {
+   padding: 1rem;
+   display: flex;
+   width: 100%;
+   z-index: 2;
+   position: sticky;
+   top: 0;
+   background: #ffffffc2;
+   backdrop-filter: blur(10px);
+   border-bottom: 1px solid #d3d3d3;
+   justify-content: space-between;
+}
+
+.header__btn {
+   padding: 0.5rem 1rem;
+}
+
+.posts__heading {
+   padding: 0.5rem 1rem;
+   display: flex;
+   align-items: center;
+}
+
+.posts__caption {
+   padding: 0.5rem 1rem;
+   margin-bottom: 0.2rem;
+}
+
+.posts__avatar {
+   margin-right: 10px;
+}
+
+.header__signup {
+   display: flex;
+   flex-direction: column;
+}
+
+.header__signup Button {
+   margin-top: 10px;
+}
+
+.imageUpload {
+   position: fixed;
+   backdrop-filter: blur(10px);
+   background-color: #ffffffd7;
+   bottom: 0;
+   left: 50%;
+   transform: translateX(-50%);
+   padding: 0.5rem 1rem;
+   border-radius: 10px 10px 0 0;
+   display: flex;
+   flex-direction: column;
+   width: 50%;
+   min-width: 468px;
+   max-width: 560px;
+   margin: 0 auto;
+}
+
+.imageUpload__button {
+   position: fixed;
+   z-index: 2;
+   top: 15px;
+   left: 50%;
+   transform: translateX(-50%);
+}
+
+.imageUpload__captionButton {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+
+.imageUpload__uploadProgress {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+
+.captionButton__input {
+   width: calc(100% - 120px);
+   padding: 0;
+}
+
+.imageUpload progress {
+   width: 90%;
+   padding: 10px 0;
+}
+
+.imageUpload Button {
+   margin-bottom: 10px;
+}
+
+.imageUpload Input {
+   padding: 0;
+   margin: 10px 0;
+}
+
+.posts__form {
+   display: flex;
+   justify-content: space-between;
+}
+
+.posts__form Button {
+   padding: 0;
+}
+
+.posts__input {
+   width: calc(100% - 65px);
+   border: none;
+   border-top: 1px solid #d3d3d3;
+   padding: 0 0.5rem;
+}
+
+.posts__comment {
+   padding: 1rem;
+}
+
+@media (max-width: 420px) {
+   Button {
+      width: 70px;
+      padding: 0 !important;
+      font-size: 10px;
+   }
+
+   .imageUpload {
+      width: 100%;
+      max-width: none;
+   }
+
+   .imageUpload {
+      min-width: fit-content;
+   }
+}
