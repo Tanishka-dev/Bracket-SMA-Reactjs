@@ -71,11 +71,16 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
    return (
       <div className="max-w-xl border border-gray-400 mx-auto mb-6">
          <div className="posts__heading">
-            <img
-               className="h-10 w-10 rounded-full mr-2"
-               alt={username}
-               src={user.user.photoURL}
-            ></img>
+            {user.user.photoURL ? (
+               <img
+                  className="h-10 w-10 rounded-full mr-2"
+                  alt={username}
+                  src={user.user.photoURL}
+               ></img>
+            ) : (
+               ""
+            )}
+
             <h4>{username}</h4>
          </div>
          <img className="w-full" src={imgUrl} />

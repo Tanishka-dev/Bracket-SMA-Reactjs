@@ -1,5 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { createSlice } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 
 export const userSlice = createSlice({

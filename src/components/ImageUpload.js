@@ -4,19 +4,22 @@ import { db, storage } from "../index";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import ButtonPrimary from "./ButtonPrimary";
+import { useUserData } from "../features/User/userSlice";
 const ImageUpload = () => {
    const [image, setImage] = useState(null);
    const [progress, setProgress] = useState(0);
    const [caption, setCaption] = useState("");
    const [open, setOpen] = useState(false);
-
+   const user = useUserData();
+   console.log(user.user.displayName);
    const handleChange = (e) => {
       if (e.target.files[0]) {
          setImage(e.target.files[0]);
       }
    };
 
-   const handleUpload = ({ username }) => {
+   const handleUpload = (username) => {
+      console.log(username);
       const metadata = {
          contentType: "image/jpeg",
       };
@@ -42,7 +45,7 @@ const ImageUpload = () => {
                   timestamp: serverTimestamp(),
                   caption: caption,
                   imgUrl: downloadURL,
-                  username: username ? username : "Tanishka",
+                  username: username,
                })
                   .then((data) => console.log(data))
                   .catch((err) => console.log(err));
@@ -86,7 +89,7 @@ const ImageUpload = () => {
                      text="Upload"
                      type="button"
                      variant="outlined"
-                     onClick={handleUpload}
+                     onClick={() => handleUpload(user.user.displayName)}
                   />
                </div>
             </div>
