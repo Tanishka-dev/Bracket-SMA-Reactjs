@@ -8,6 +8,7 @@ import {
    serverTimestamp,
    updateDoc,
 } from "firebase/firestore";
+import { motion } from "framer-motion";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import ButtonPrimary from "./ButtonPrimary";
@@ -18,7 +19,9 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
    const [comment, setComment] = useState("");
    const [captionEdit, setCaptionEdit] = useState(caption);
    const [editCap, setEditCap] = useState(false);
-
+   const [showCmnt, setShowCmnt] = useState(false);
+   const [toggle, settoggle] = useState(false);
+   const [colorChange, setcolorChange] = useState(false);
    const user = useUserData();
 
    useEffect(() => {
@@ -36,7 +39,9 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
       };
    }, [postId]);
 
-   const addComment = (username) => {
+   const addComment = (username, e) => {
+      e.preventDefault();
+
       const comtCollection = collection(db, "posts", postId, "comments");
 
       addDoc(comtCollection, {
@@ -45,7 +50,7 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
          timestamp: serverTimestamp(),
          replies: [],
       }).then(function () {
-         console.log("Added comment");
+         console.log("");
       });
 
       setComment("");
@@ -64,14 +69,12 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
          .catch((err) => console.log(err));
    };
 
-   console.log(user);
-
    return (
-      <div className="max-w-xl border border-gray-400 mx-auto mb-6">
-         <div className="posts__heading">
+      <div className="max-w-xl mx-auto mb-6 border-gray-300 border rounded-3xl ">
+         <div className="posts__heading flex flex-row justify-items-end ">
             {user.user.photoURL ? (
                <img
-                  className="h-10 w-10 rounded-full mr-2"
+                  className="h-12 w-12 rounded-xl mr-2"
                   alt={username}
                   src={user.user.photoURL}
                ></img>
@@ -80,92 +83,183 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
             )}
 
             <h4>{username}</h4>
+            <svg
+               xmlns="http://www.w3.org/2000/svg"
+               className="h-6 w-6 ml-96"
+               fill="none"
+               viewBox="0 0 24 24"
+               stroke="currentColor"
+               stroke-width="2"
+               onClick={() => settoggle((prev) => !prev)}
+            >
+               <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+               />
+            </svg>
          </div>
-         <img className="w-full" src={imgUrl} />
-         <div className="posts__caption flex justify-between">
-            <div className="">
+         <div>
+            {toggle ? (
+               <div className="imageUpload ">
+                  <svg
+                     xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 24 24"
+                     fill="currentColor"
+                     onClick={() => setEditCap((prev) => !prev)}
+                     className="fill-lime-500 h-10 w-10 cursor-pointer"
+                  >
+                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                  </svg>
+                  <svg
+                     xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 24 24"
+                     fill="currentColor"
+                     className="fill-red-600 h-10 w-10 cursor-pointer"
+                     onClick={() => deletePost()}
+                  >
+                     <path
+                        fill-rule="evenodd"
+                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                        clip-rule="evenodd"
+                     />
+                  </svg>
+               </div>
+            ) : (
+               ""
+            )}
+         </div>
+
+         <img className="w-full rounded-3xl " src={imgUrl} />
+         <div className="posts__caption flex justify-between ">
+            <div className=" flex flex-row gap-3">
                <strong>{username} </strong>
                {!editCap ? (
                   <p>{caption}</p>
                ) : (
                   <input
-                     className="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                     className="appearance-none w-fit h-6 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                      type="text"
                      value={captionEdit}
                      onChange={(e) => setCaptionEdit(e.target.value)}
                   />
                )}
             </div>
-            <div className="m-4">
-               {editCap ? (
-                  <ButtonPrimary
-                     size="small"
-                     text="Save"
-                     onClick={() => editPost()}
-                  />
-               ) : (
-                  <ButtonPrimary
-                     size="small"
-                     text="Edit"
-                     onClick={() => setEditCap((prev) => !prev)}
-                  />
-               )}
-               <ButtonPrimary
-                  size="small"
-                  text="Delete"
-                  onClick={() => deletePost()}
-               />
-            </div>
          </div>
-
-         <div className="posts__comment">
-            {comments.map((comment) => (
-               <div key={comment.id}>
-                  <Comment
-                     postId={postId}
-                     id={comment.id}
-                     username={user.user.displayName}
-                     comment={comment}
+         <div className="flex flex-row gap-3">
+            {colorChange ? (
+               <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  onClick={() => setcolorChange((prev) => !prev)}
+                  className="fill-rose-600 h-6 w-6"
+               >
+                  <path
+                     fill-rule="evenodd"
+                     d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                     clip-rule="evenodd"
                   />
-                  {comment.data.replies?.map((reply, index) => {
-                     let _comment = {};
-                     _comment.data = reply;
-                     return (
-                        <div key={index} className="pl-4">
-                           <Comment
-                              comment={_comment}
-                              replies={comment.data?.replies}
-                              postId={postId}
-                              index={index}
-                              id={comment.id}
-                              username={user.user.displayName}
-                           />
-                        </div>
-                     );
-                  })}
-               </div>
-            ))}
-         </div>
+               </svg>
+            ) : (
+               <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  onClick={() => setcolorChange((prev) => !prev)}
+                  className="fill-white h-6 w-6"
+               >
+                  <path
+                     fill-rule="evenodd"
+                     d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                     clip-rule="evenodd"
+                  />
+               </svg>
+            )}
 
-         {auth.currentUser ? (
-            <form
-               className="flex gap-4"
-               onSubmit={() => addComment(user.user.displayName)}
+            <svg
+               xmlns="http://www.w3.org/2000/svg"
+               class="h-6 w-6"
+               fill="none"
+               viewBox="0 0 24 24"
+               stroke="currentColor"
+               stroke-width="2"
+               onClick={() => setShowCmnt((prev) => !prev)}
             >
-               <input
-                  type="text"
-                  className="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="Add a comment..."
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
+               <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                />
-               <ButtonPrimary
-                  size="small"
-                  text="Add"
-                  disabled={!comment}
-                  type="submit"
-               />
-            </form>
+            </svg>
+            {editCap ? (
+               <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  onClick={() => editPost()}
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="fill-black h-7 w-7"
+               >
+                  <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+               </svg>
+            ) : (
+               ""
+            )}
+         </div>
+         {showCmnt ? (
+            <div>
+               <div className="posts__comment">
+                  {comments.map((comment) => (
+                     <div key={comment.id}>
+                        <Comment
+                           postId={postId}
+                           id={comment.id}
+                           username={user.user.displayName}
+                           comment={comment}
+                        />
+                        {comment.data.replies?.map((reply, index) => {
+                           let _comment = {};
+                           _comment.data = reply;
+                           return (
+                              <div key={index} className="pl-4">
+                                 <Comment
+                                    comment={_comment}
+                                    replies={comment.data?.replies}
+                                    postId={postId}
+                                    index={index}
+                                    id={comment.id}
+                                    username={user.user.displayName}
+                                 />
+                              </div>
+                           );
+                        })}
+                     </div>
+                  ))}
+               </div>
+
+               {auth.currentUser ? (
+                  <form
+                     className="flex gap-4"
+                     onSubmit={(e) => addComment(user.user.displayName, e)}
+                  >
+                     <input
+                        type="text"
+                        className="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        placeholder="Add a comment..."
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                     />
+                     <ButtonPrimary
+                        size="small"
+                        text="Add"
+                        disabled={!comment}
+                        type="submit"
+                     />
+                  </form>
+               ) : (
+                  ""
+               )}
+            </div>
          ) : (
             ""
          )}
@@ -201,14 +295,14 @@ const Comment = ({ comment, id, replies, postId, index, username }) => {
             replies: [...replies, { username: username, comment: reply }],
          }).then(function () {
             setReply("");
-            console.log("Added comment");
+            console.log("");
          });
       } else {
          updateDoc(comt, {
             replies: [{ username: username, comment: reply }],
          }).then(function () {
             setReply("");
-            console.log("Added comment");
+            console.log("");
          });
       }
    };
@@ -235,23 +329,40 @@ const Comment = ({ comment, id, replies, postId, index, username }) => {
                   <div className="posts__caption  gap-6">
                      {comment.data?.replies?.length >= 0 && (
                         <>
-                           <ButtonPrimary
-                              size="small"
-                              text="Delete"
-                              onClick={deleteCmnt}
-                           />
+                           <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                              className="fill-red-600 h-4 w-4"
+                              onClick={() => deleteCmnt()}
+                           >
+                              <path
+                                 fill-rule="evenodd"
+                                 d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                 clip-rule="evenodd"
+                              />
+                           </svg>
+
                            {edit ? (
-                              <ButtonPrimary
-                                 size="small"
-                                 text="Save"
+                              <svg
+                                 xmlns="http://www.w3.org/2000/svg"
                                  onClick={() => editCmnt()}
-                              />
+                                 viewBox="0 0 20 20"
+                                 fill="currentColor"
+                                 className="fill-lime-500 h-4 w-4"
+                              >
+                                 <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                              </svg>
                            ) : (
-                              <ButtonPrimary
-                                 size="small"
-                                 text="Edit"
+                              <svg
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 viewBox="0 0 20 20"
+                                 fill="currentColor"
                                  onClick={() => setEdit((prev) => !prev)}
-                              />
+                                 className="fill-lime-500 h-4 w-4"
+                              >
+                                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                              </svg>
                            )}
                         </>
                      )}
@@ -264,19 +375,14 @@ const Comment = ({ comment, id, replies, postId, index, username }) => {
                      {auth.currentUser ? (
                         <form
                            className="flex w-full justify-between gap-6 mb-2"
-                           onSubmit={replyComment}
+                           onSubmit={(e) => replyComment(e)}
                         >
                            <input
                               type="text"
                               className="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                              placeholder="Add a comment..."
+                              placeholder="Reply"
                               value={reply}
                               onChange={(e) => setReply(e.target.value)}
-                           />
-                           <ButtonPrimary
-                              size="small"
-                              text="Add"
-                              type="submit"
                            />
                         </form>
                      ) : (
@@ -294,14 +400,9 @@ const Comment = ({ comment, id, replies, postId, index, username }) => {
                            <input
                               type="text"
                               className="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                              placeholder="Add a comment..."
+                              placeholder="Reply"
                               value={reply}
                               onChange={(e) => setReply(e.target.value)}
-                           />
-                           <ButtonPrimary
-                              size="small"
-                              text="Add"
-                              type="submit"
                            />
                         </form>
                      ) : (
