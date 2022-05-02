@@ -8,12 +8,24 @@ import {
    serverTimestamp,
    updateDoc,
 } from "firebase/firestore";
-import { motion } from "framer-motion";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import ButtonPrimary from "./ButtonPrimary";
 import { useUserData } from "../features/User/userSlice";
 import { auth, db } from "../index";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Slide from "@mui/material/Slide";
+import { Box } from "@mui/material";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+   return <Slide direction="up" ref={ref} {...props} />;
+});
+
 const Posts = ({ postId, caption, imgUrl, username }) => {
    const [comments, setComments] = useState([]);
    const [comment, setComment] = useState("");
@@ -70,9 +82,9 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
    };
 
    return (
-      <div className="max-w-xl mx-auto mb-6 border-gray-300 border rounded-3xl ">
+      <div className="max-w-xl mx-auto mb-6 border-gray-300 border rounded-3xl shadow-2xl ">
          <div className="posts__heading flex flex-row justify-items-end ">
-            {user.user.photoURL ? (
+            {user.user.photoURL && user.user.displayName == username ? (
                <img
                   className="h-12 w-12 rounded-xl mr-2"
                   alt={username}
@@ -83,54 +95,52 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
             )}
 
             <h4>{username}</h4>
-            <svg
-               xmlns="http://www.w3.org/2000/svg"
-               className="h-6 w-6 ml-96"
-               fill="none"
-               viewBox="0 0 24 24"
-               stroke="currentColor"
-               stroke-width="2"
-               onClick={() => settoggle((prev) => !prev)}
-            >
-               <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-               />
-            </svg>
-         </div>
-         <div>
-            {toggle ? (
-               <div className="imageUpload ">
-                  <svg
-                     xmlns="http://www.w3.org/2000/svg"
-                     viewBox="0 0 24 24"
-                     fill="currentColor"
-                     onClick={() => setEditCap((prev) => !prev)}
-                     className="fill-lime-500 h-10 w-10 cursor-pointer"
-                  >
-                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                  </svg>
-                  <svg
-                     xmlns="http://www.w3.org/2000/svg"
-                     viewBox="0 0 24 24"
-                     fill="currentColor"
-                     className="fill-red-600 h-10 w-10 cursor-pointer"
-                     onClick={() => deletePost()}
-                  >
-                     <path
-                        fill-rule="evenodd"
-                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                        clip-rule="evenodd"
-                     />
-                  </svg>
-               </div>
-            ) : (
-               ""
+            {user.user.displayName == username && (
+               <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 ml-96"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  onClick={() => settoggle((prev) => !prev)}
+               >
+                  <path
+                     strokeLinecap="round"
+                     strokeLinejoin="round"
+                     d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                  />
+               </svg>
             )}
          </div>
 
-         <img className="w-full rounded-3xl " src={imgUrl} />
+         <Dialog
+            open={toggle}
+            TransitionComponent={Transition}
+            keepMounted
+            aria-describedby="alert-dialog-slide-description"
+         >
+            <DialogContent className="flex flex-col gap-3 cursor-pointer">
+               <DialogContentText
+                  id="alert-dialog-slide-description"
+                  onClick={() => {
+                     setEditCap((prev) => !prev);
+                     settoggle(false);
+                  }}
+               >
+                  Edit Caption
+               </DialogContentText>
+               <DialogContentText
+                  id="alert-dialog-slide-description"
+                  onClick={() => deletePost()}
+               >
+                  Delete Post
+               </DialogContentText>
+            </DialogContent>
+            <Button onClick={() => settoggle(false)}>Close</Button>
+         </Dialog>
+
+         <img className="w-full rounded-3xl shadow-sm " src={imgUrl} />
          <div className="posts__caption flex justify-between ">
             <div className=" flex flex-row gap-3">
                <strong>{username} </strong>
@@ -146,49 +156,37 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
                )}
             </div>
          </div>
-         <div className="flex flex-row gap-3">
-            {colorChange ? (
-               <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  onClick={() => setcolorChange((prev) => !prev)}
-                  className="fill-rose-600 h-6 w-6"
-               >
-                  <path
-                     fill-rule="evenodd"
-                     d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                     clip-rule="evenodd"
-                  />
-               </svg>
-            ) : (
-               <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  onClick={() => setcolorChange((prev) => !prev)}
-                  className="fill-white h-6 w-6"
-               >
-                  <path
-                     fill-rule="evenodd"
-                     d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                     clip-rule="evenodd"
-                  />
-               </svg>
-            )}
+         <div className="flex flex-row gap-3 posts__caption  ">
+            <svg
+               xmlns="http://www.w3.org/2000/svg"
+               viewBox="0 0 20 20"
+               fill="currentColor"
+               onClick={() => setcolorChange((prev) => !prev)}
+               className={
+                  colorChange
+                     ? "fill-stone-300 h-6 w-6"
+                     : "fill-rose-600 h-6 w-6"
+               }
+            >
+               <path
+                  fillRule="evenodd"
+                  d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                  clipRule="evenodd"
+               />
+            </svg>
 
             <svg
                xmlns="http://www.w3.org/2000/svg"
-               class="h-6 w-6"
+               className="h-6 w-6 hover:transition-all"
                fill="none"
                viewBox="0 0 24 24"
                stroke="currentColor"
-               stroke-width="2"
+               strokeWidth="2"
                onClick={() => setShowCmnt((prev) => !prev)}
             >
                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                />
             </svg>
@@ -415,5 +413,4 @@ const Comment = ({ comment, id, replies, postId, index, username }) => {
       </div>
    );
 };
-
 export default Posts;

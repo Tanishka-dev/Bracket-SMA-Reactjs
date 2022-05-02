@@ -5,6 +5,20 @@ import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import ButtonPrimary from "./ButtonPrimary";
 import { useUserData } from "../features/User/userSlice";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Slide from "@mui/material/Slide";
+import { Box } from "@mui/material";
+
+import TextField from "@mui/material/TextField";
+const Transition = React.forwardRef(function Transition(props, ref) {
+   return <Slide direction="up" ref={ref} {...props} />;
+});
+
 const ImageUpload = () => {
    const [image, setImage] = useState(null);
    const [progress, setProgress] = useState(0);
@@ -19,7 +33,6 @@ const ImageUpload = () => {
    };
 
    const handleUpload = (username) => {
-      console.log(username);
       const metadata = {
          contentType: "image/jpeg",
       };
@@ -70,31 +83,55 @@ const ImageUpload = () => {
             />
          </div>
 
-         {open ? (
-            <div className="imageUpload">
-               <div className="imageUpload__uploadProgress">
-                  <input type="file" onChange={handleChange} />
-                  <progress value={progress} max="100" />
-               </div>
-               <div className="imageUpload__captionButton gap-5">
-                  <input
-                     className="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                     type="text"
-                     placeholder="Enter a caption"
+         {open && (
+            <Dialog
+               open={open}
+               TransitionComponent={Transition}
+               keepMounted
+               aria-describedby="alert-dialog-slide-description"
+            >
+               <DialogTitle className="flex justify-center text-zinc-700">
+                  {"Select picture to upload!"}
+               </DialogTitle>
+               <DialogContent className="flex flex-col gap-5">
+                  <Button
+                     type="button"
+                     className=" wleading-tight uppercase rounded shadow-md "
+                  >
+                     <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-8 w-8"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                     >
+                        <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                     </svg>
+                     <input
+                        type="file"
+                        onChange={handleChange}
+                        className=" font-normal text-sm "
+                     />
+                  </Button>
+                  <TextField
                      onChange={(e) => setCaption(e.target.value)}
                      value={caption}
+                     className="w-full"
+                     required
+                     label="Required"
+                     placeholder="Caption"
                   />
-                  <ButtonPrimary
-                     size="medium"
-                     text="Upload"
+                  <Button
+                     onClick={() => {
+                        handleUpload(user.user.displayName);
+                        setOpen((prev) => !prev);
+                     }}
                      type="button"
-                     variant="outlined"
-                     onClick={() => handleUpload(user.user.displayName)}
-                  />
-               </div>
-            </div>
-         ) : (
-            ""
+                     className=" w-full font-medium text-xl leading-tight uppercase rounded shadow-md"
+                  >
+                     Upload
+                  </Button>
+               </DialogContent>
+            </Dialog>
          )}
       </div>
    );
