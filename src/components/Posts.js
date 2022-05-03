@@ -4,7 +4,6 @@ import {
    deleteDoc,
    doc,
    onSnapshot,
-   query,
    serverTimestamp,
    updateDoc,
 } from "firebase/firestore";
@@ -15,12 +14,9 @@ import { useUserData } from "../features/User/userSlice";
 import { auth, db } from "../index";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
-import { Box } from "@mui/material";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
    return <Slide direction="up" ref={ref} {...props} />;
@@ -164,8 +160,8 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
                onClick={() => setcolorChange((prev) => !prev)}
                className={
                   colorChange
-                     ? "fill-stone-300 h-6 w-6"
-                     : "fill-rose-600 h-6 w-6"
+                     ? "fill-rose-600 h-6 w-6"
+                     : "fill-stone-300 h-6 w-6"
                }
             >
                <path
@@ -237,7 +233,7 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
 
                {auth.currentUser ? (
                   <form
-                     className="flex gap-4"
+                     className="flex gap-2 m-3"
                      onSubmit={(e) => addComment(user.user.displayName, e)}
                   >
                      <input
@@ -247,12 +243,13 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
                      />
-                     <ButtonPrimary
-                        size="small"
-                        text="Add"
+                     <Button
                         disabled={!comment}
                         type="submit"
-                     />
+                        className=" w-fit font-medium text-xl leading-tight uppercase  shadow-sm"
+                     >
+                        ADD
+                     </Button>
                   </form>
                ) : (
                   ""

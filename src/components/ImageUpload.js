@@ -7,12 +7,9 @@ import ButtonPrimary from "./ButtonPrimary";
 import { useUserData } from "../features/User/userSlice";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
-import { Box } from "@mui/material";
 
 import TextField from "@mui/material/TextField";
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -94,10 +91,7 @@ const ImageUpload = () => {
                   {"Select picture to upload!"}
                </DialogTitle>
                <DialogContent className="flex flex-col gap-5">
-                  <Button
-                     type="button"
-                     className=" wleading-tight uppercase rounded shadow-md "
-                  >
+                  <Button type="button" className="  shadow-md  ">
                      <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-8 w-8"
@@ -108,16 +102,15 @@ const ImageUpload = () => {
                      </svg>
                      <input
                         type="file"
+                        accept="image/*"
                         onChange={handleChange}
-                        className=" font-normal text-sm "
+                        className=" font-normal text-sm border-blue-400"
                      />
                   </Button>
                   <TextField
                      onChange={(e) => setCaption(e.target.value)}
                      value={caption}
                      className="w-full"
-                     required
-                     label="Required"
                      placeholder="Caption"
                   />
                   <Button
@@ -129,6 +122,15 @@ const ImageUpload = () => {
                      className=" w-full font-medium text-xl leading-tight uppercase rounded shadow-md"
                   >
                      Upload
+                  </Button>
+                  <Button
+                     onClick={() => {
+                        setOpen((prev) => !prev);
+                     }}
+                     type="button"
+                     className=" w-full font-medium text-xl leading-tight uppercase rounded shadow-md"
+                  >
+                     ClOSE
                   </Button>
                </DialogContent>
             </Dialog>
