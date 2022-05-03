@@ -37,7 +37,7 @@ const Home = () => {
                username={post.username}
             />
          ))}
-         {user.isLoggedIn && <ImageUpload username={user.user.displayName} />}
+         s{user.isLoggedIn && <ImageUpload username={user.user.displayName} />}
       </div>
    );
 };

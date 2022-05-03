@@ -136,7 +136,7 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
             <Button onClick={() => settoggle(false)}>Close</Button>
          </Dialog>
 
-         <img className="w-full rounded-3xl shadow-sm " src={imgUrl} />
+         <img className="rounded-3xl shadow-sm w-full" src={imgUrl} />
          <div className="posts__caption flex justify-between ">
             <div className=" flex flex-row gap-3">
                <strong>{username} </strong>

@@ -69,15 +69,24 @@ const ImageUpload = () => {
 
    return (
       <div>
-         <div className="imageUpload__button">
-            <ButtonPrimary
-               size="medium"
-               text="Upload"
-               type="button"
-               className="py-3"
-               onClick={(e) => setOpen((prev) => !prev)}
-               variant="outlined"
-            />
+         <div
+            className="shadow-md rounded-full h-36 w-36 top-72 ml-4 absolute flex justify center  "
+            onClick={(e) => setOpen((prev) => !prev)}
+         >
+            <svg
+               xmlns="http://www.w3.org/2000/svg"
+               className="lg:h-20 w-20 ml-7 mt-6  "
+               fill="none"
+               viewBox="0 0 24 24"
+               stroke="currentColor"
+               stroke-width="1"
+            >
+               <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4v16m8-8H4"
+               />
+            </svg>
          </div>
 
          {open && (
@@ -140,3 +149,19 @@ const ImageUpload = () => {
 };
 
 export default ImageUpload;
+/*   <Button type="button" className="shadow-md ">
+               <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+               >
+                  <path
+                     stroke-linecap="round"
+                     stroke-linejoin="round"
+                     d="M12 4v16m8-8H4"
+                  />
+               </svg>
+            </Button> */

@@ -45,23 +45,6 @@
    margin-top: 10px;
 }
 
-.imageUpload {
-   position: fixed;
-   backdrop-filter: blur(10px);
-   background-color: #ffffffd7;
-   bottom: 0;
-   left: 50%;
-   transform: translateX(-50%);
-   padding: 0.5rem 1rem;
-   border-radius: 10px 10px 0 0;
-   display: flex;
-   flex-direction: column;
-   width: 50%;
-   min-width: 468px;
-   max-width: 560px;
-   margin: 0 auto;
-}
-
 .imageUpload__button {
    position: fixed;
    z-index: 2;
