@@ -31,6 +31,7 @@ const Home = () => {
          {posts.map(({ id, post }) => (
             <Posts
                key={id}
+               photoURL={post.profileImg}
                postId={id}
                caption={post.caption}
                imgUrl={post.imgUrl}

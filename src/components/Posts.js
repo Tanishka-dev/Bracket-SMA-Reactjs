@@ -22,7 +22,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
    return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const Posts = ({ postId, caption, imgUrl, username }) => {
+const Posts = ({ postId, caption, imgUrl, username, photoURL }) => {
    const [comments, setComments] = useState([]);
    const [comment, setComment] = useState("");
    const [captionEdit, setCaptionEdit] = useState(caption);
@@ -78,19 +78,33 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
    };
 
    return (
-      <div className="max-w-xl mx-auto mb-6 border-gray-300 border rounded-3xl shadow-2xl ">
-         <div className="posts__heading flex flex-row justify-items-end ">
-            {user.user.photoURL && user.user.displayName == username ? (
+      <div
+         className="  max-w-xl mx-auto mb-8 p-6 border-gray-300 border rounded-3xl shadow-2xl transition duration-500 ease-in-out 
+      hover:bg-slate-100 transform 
+      hover:-translate-y-1 hover:scale-105  
+      "
+      >
+         <div className=" flex flex-row ">
+            {photoURL ? (
                <img
-                  className="h-12 w-12 rounded-xl mr-2"
+                  className="h-12 w-12 rounded-lg m-3"
                   alt={username}
-                  src={user.user.photoURL}
+                  src={photoURL}
                ></img>
             ) : (
-               ""
+               <p
+                  style={{
+                     backgroundColor: `#${Math.floor(
+                        Math.random() * 16777215
+                     ).toString(16)}`,
+                  }}
+                  className="text-white m-3 rounded-lg h-12 w-12  items-center text-xl font-bold flex justify-center"
+               >
+                  {username.slice(0, 1)}
+               </p>
             )}
 
-            <h4>{username}</h4>
+            <h4 className="flex mt-5">{username}</h4>
             {user.user.displayName == username && (
                <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -160,8 +174,8 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
                onClick={() => setcolorChange((prev) => !prev)}
                className={
                   colorChange
-                     ? "fill-rose-600 h-6 w-6"
-                     : "fill-stone-300 h-6 w-6"
+                     ? "fill-rose-600 h-8 w-8 cursor-pointer"
+                     : "fill-stone-500 h-8 w-8 cursor-pointer hover:animate-bounce "
                }
             >
                <path
@@ -173,7 +187,7 @@ const Posts = ({ postId, caption, imgUrl, username }) => {
 
             <svg
                xmlns="http://www.w3.org/2000/svg"
-               className="h-6 w-6 hover:transition-all"
+               className=" h-8 w-8 text-stone-500 cursor-pointer hover:animate-bounce hover:text-blue-600"
                fill="none"
                viewBox="0 0 24 24"
                stroke="currentColor"
@@ -266,7 +280,7 @@ const Comment = ({ comment, id, replies, postId, index, username }) => {
    const [reply, setReply] = useState("");
    const [edit, setEdit] = useState(false);
    const [commentEdit, setCommentEdit] = useState(comment.data.comment);
-
+   const [isReply, setIsReply] = useState(false);
    const deleteCmnt = (e) => {
       deleteDoc(doc(db, "posts", postId, "comments", id))
          .then((res) => console.log(res))
@@ -307,7 +321,7 @@ const Comment = ({ comment, id, replies, postId, index, username }) => {
          <div className="flex flex-col gap-1">
             <div className="flex justify-between">
                <div className="flex justify-between w-full gap-1">
-                  <div className="flex-row">
+                  <div className="flex-col">
                      <strong>{comment.data.username}</strong>
 
                      {!edit ? (
@@ -320,91 +334,89 @@ const Comment = ({ comment, id, replies, postId, index, username }) => {
                            onChange={(e) => setCommentEdit(e.target.value)}
                         />
                      )}
-                  </div>
-                  <div className="posts__caption  gap-6">
-                     {comment.data?.replies?.length >= 0 && (
-                        <>
-                           <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                              className="fill-red-600 h-4 w-4"
-                              onClick={() => deleteCmnt()}
-                           >
-                              <path
-                                 fill-rule="evenodd"
-                                 d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                 clip-rule="evenodd"
-                              />
-                           </svg>
-
-                           {edit ? (
-                              <svg
-                                 xmlns="http://www.w3.org/2000/svg"
-                                 onClick={() => editCmnt()}
-                                 viewBox="0 0 20 20"
-                                 fill="currentColor"
-                                 className="fill-lime-500 h-4 w-4"
+                     <div className="mt-2 flex flex-row gap-5 text-blue-500 text-xs cursor-pointer ">
+                        {comment.data?.replies?.length >= 0 && (
+                           <>
+                              <h6
+                                 onClick={() => deleteCmnt()}
+                                 className="hover:text-stone-500"
                               >
-                                 <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
-                              </svg>
-                           ) : (
-                              <svg
-                                 xmlns="http://www.w3.org/2000/svg"
-                                 viewBox="0 0 20 20"
-                                 fill="currentColor"
-                                 onClick={() => setEdit((prev) => !prev)}
-                                 className="fill-lime-500 h-4 w-4"
-                              >
-                                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                              </svg>
-                           )}
-                        </>
-                     )}
+                                 Delete
+                              </h6>
+                              {edit ? (
+                                 <h6
+                                    onClick={() => editCmnt()}
+                                    className="hover:text-stone-500"
+                                 >
+                                    Save
+                                 </h6>
+                              ) : (
+                                 <h6
+                                    onClick={() => setEdit((prev) => !prev)}
+                                    className="hover:text-stone-500"
+                                 >
+                                    Edit
+                                 </h6>
+                              )}
+                           </>
+                        )}
+                        {replies && replies.length - 1 === index && (
+                           <>
+                              {auth.currentUser && isReply ? (
+                                 <form
+                                    className="flex w-full justify-between gap-6 mb-2"
+                                    onSubmit={(e) => replyComment(e)}
+                                 >
+                                    <input
+                                       type="text"
+                                       className="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                       placeholder="Reply"
+                                       value={reply}
+                                       onChange={(e) =>
+                                          setReply(e.target.value)
+                                       }
+                                    />
+                                 </form>
+                              ) : (
+                                 <p
+                                    onClick={() => setIsReply((s) => !s)}
+                                    className="hover:text-stone-500"
+                                 >
+                                    Reply
+                                 </p>
+                              )}
+                           </>
+                        )}
+                        {comment.data?.replies?.length === 0 && (
+                           <>
+                              {auth.currentUser && isReply ? (
+                                 <form
+                                    className="flex w-full justify-between gap-6 mb-2"
+                                    onSubmit={replyComment}
+                                 >
+                                    <input
+                                       type="text"
+                                       className="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                       placeholder="Reply"
+                                       value={reply}
+                                       onChange={(e) =>
+                                          setReply(e.target.value)
+                                       }
+                                    />
+                                 </form>
+                              ) : (
+                                 <p
+                                    onClick={() => setIsReply((s) => !s)}
+                                    className="hover:text-stone-500"
+                                 >
+                                    Reply
+                                 </p>
+                              )}
+                           </>
+                        )}
+                     </div>
                   </div>
                </div>
-            </div>
-            <div className="flex gap-3">
-               {replies && replies.length - 1 === index && (
-                  <>
-                     {auth.currentUser ? (
-                        <form
-                           className="flex w-full justify-between gap-6 mb-2"
-                           onSubmit={(e) => replyComment(e)}
-                        >
-                           <input
-                              type="text"
-                              className="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                              placeholder="Reply"
-                              value={reply}
-                              onChange={(e) => setReply(e.target.value)}
-                           />
-                        </form>
-                     ) : (
-                        ""
-                     )}
-                  </>
-               )}
-               {comment.data?.replies?.length === 0 && (
-                  <>
-                     {auth.currentUser ? (
-                        <form
-                           className="flex w-full justify-between gap-6 mb-2"
-                           onSubmit={replyComment}
-                        >
-                           <input
-                              type="text"
-                              className="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                              placeholder="Reply"
-                              value={reply}
-                              onChange={(e) => setReply(e.target.value)}
-                           />
-                        </form>
-                     ) : (
-                        ""
-                     )}
-                  </>
-               )}
             </div>
          </div>
       </div>

@@ -12,6 +12,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
 
 import TextField from "@mui/material/TextField";
+import { getAuth } from "firebase/auth";
 const Transition = React.forwardRef(function Transition(props, ref) {
    return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -51,11 +52,15 @@ const ImageUpload = () => {
          () => {
             // Upload completed successfully, now we can get the download URL
             getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+               const auth = getAuth();
+               const user = auth.currentUser;
+               console.log(user);
                addDoc(collection(db, "posts"), {
                   timestamp: serverTimestamp(),
                   caption: caption,
                   imgUrl: downloadURL,
                   username: username,
+                  profileImg: user.photoURL ?? "",
                })
                   .then((data) => console.log(data))
                   .catch((err) => console.log(err));
@@ -70,23 +75,10 @@ const ImageUpload = () => {
    return (
       <div>
          <div
-            className="shadow-md rounded-full h-36 w-36 top-72 ml-4 absolute flex justify center  "
+            className="fixed top-2 right-28 cursor-pointer hover:animate-bounce  "
             onClick={(e) => setOpen((prev) => !prev)}
          >
-            <svg
-               xmlns="http://www.w3.org/2000/svg"
-               className="lg:h-20 w-20 ml-7 mt-6  "
-               fill="none"
-               viewBox="0 0 24 24"
-               stroke="currentColor"
-               stroke-width="1"
-            >
-               <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4v16m8-8H4"
-               />
-            </svg>
+            <img src="/plus.png" className="shadow-md h-12 w-12 rounded-full" />
          </div>
 
          {open && (
@@ -149,19 +141,3 @@ const ImageUpload = () => {
 };
 
 export default ImageUpload;
-/*   <Button type="button" className="shadow-md ">
-               <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2"
-               >
-                  <path
-                     stroke-linecap="round"
-                     stroke-linejoin="round"
-                     d="M12 4v16m8-8H4"
-                  />
-               </svg>
-            </Button> */
